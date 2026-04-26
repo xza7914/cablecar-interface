@@ -1,0 +1,167 @@
+syntax = "proto3";
+
+package cablecar.core.groupchat;
+option java_package = "com.cablecar.backend.core.grpc.groupchat";
+option java_multiple_files = true;
+
+option go_package = "proto/groupchat";
+
+// 群聊服务
+service GroupChatService {
+  // 创建群聊
+  rpc CreateGroupChat(CreateGroupChatRequest) returns (CreateGroupChatResponse);
+
+  // 查询群聊详情
+  rpc QueryGroupChat(QueryGroupChatRequest) returns (GroupChatDetailResponse);
+
+  // 更新群聊信息
+  rpc UpdateGroupChat(UpdateGroupChatRequest) returns (GroupChatDetailResponse);
+
+  // 发现新群聊
+  rpc ProbeGroupChat(ProbeGroupChatRequest) returns (ProbeGroupChatResponse);
+
+  // 加入群聊
+  rpc JoinGroupChat(JoinGroupChatRequest) returns (JoinGroupChatResponse);
+
+  // 离开群聊
+  rpc LeaveGroupChat(LeaveGroupChatRequest) returns (LeaveGroupChatResponse);
+}
+
+// 群聊类型枚举
+enum GroupChatType {
+  GROUP_CHAT_TYPE_UNSPECIFIED = 0;
+  PUBLIC = 1;
+  PRIVATE = 2;
+}
+
+// 群聊状态枚举
+enum GroupChatStatus {
+  GROUP_CHAT_STATUS_UNSPECIFIED = 0;
+  ACTIVE = 1;
+  DISABLED = 2;
+}
+
+// 群聊查询类型枚举
+enum GroupChatQueryType {
+  GROUP_CHAT_QUERY_TYPE_UNSPECIFIED = 0;
+  GROUP_CHAT_UUID = 1;
+  GROUP_CHAT_NO = 2;
+}
+
+// 创建群聊请求
+message CreateGroupChatRequest {
+  string name = 1;
+  optional string description = 2;
+  optional string avatar_url = 3;
+  optional GroupChatType type = 4;
+  optional double latitude = 5;
+  optional double longitude = 6;
+}
+
+// 创建群聊响应
+message CreateGroupChatResponse {
+  string group_chat_uuid = 1;
+  string group_chat_no = 2;
+
+  // 通用响应字段
+  bool success = 1000;
+  int32 code = 1001;
+  string message = 1002;
+}
+
+// 查询群聊请求
+message QueryGroupChatRequest {
+  GroupChatQueryType query_type = 1;
+  optional string group_chat_uuid = 2;
+  optional string group_chat_no = 3;
+}
+
+// 更新群聊请求
+message UpdateGroupChatRequest {
+  string group_chat_uuid = 1;
+  optional string name = 2;
+  optional string description = 3;
+  optional string avatar_url = 4;
+  optional GroupChatType type = 5;
+  optional double latitude = 6;
+  optional double longitude = 7;
+}
+
+// 发现群聊请求
+message ProbeGroupChatRequest {
+  optional double latitude = 1;
+  optional double longitude = 2;
+  optional uint32 radius = 3; // 搜索半径（米）
+  optional uint32 limit = 4; // 返回数量限制
+}
+
+// 发现群聊响应
+message ProbeGroupChatResponse {
+  repeated GroupChatInfo group_chats = 1;
+
+  // 通用响应字段
+  bool success = 1000;
+  int32 code = 1001;
+  string message = 1002;
+}
+
+// 群聊信息（简化版）
+message GroupChatInfo {
+  string group_chat_uuid = 1;
+  string group_chat_no = 2;
+  string name = 3;
+  optional string description = 4;
+  optional string avatar_url = 5;
+  double distance = 6; // 距离（米）
+}
+
+// 群聊详情响应
+message GroupChatDetailResponse {
+  string group_chat_uuid = 1;
+  string group_chat_no = 2;
+  string name = 3;
+  optional string description = 4;
+  optional string avatar_url = 5;
+  GroupChatType type = 6;
+  optional double latitude = 7;
+  optional double longitude = 8;
+  string creator_uuid = 9;
+  repeated string tags = 10;
+  GroupChatStatus status = 11;
+  string created_at = 12; // ISO 8601 format
+
+  // 通用响应字段
+  bool success = 1000;
+  int32 code = 1001;
+  string message = 1002;
+}
+
+// 加入群聊请求
+message JoinGroupChatRequest {
+  string user_uuid = 1;
+  string group_chat_uuid = 2;
+}
+
+// 加入群聊响应
+message JoinGroupChatResponse {
+  string message = 1;
+
+  // 通用响应字段
+  bool success = 1000;
+  int32 code = 1001;
+}
+
+// 离开群聊请求
+message LeaveGroupChatRequest {
+  string user_uuid = 1;
+  string group_chat_uuid = 2;
+}
+
+// 离开群聊响应
+message LeaveGroupChatResponse {
+  string message = 1;
+
+  // 通用响应字段
+  bool success = 1000;
+  int32 code = 1001;
+}

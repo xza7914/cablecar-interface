@@ -1,0 +1,119 @@
+syntax = "proto3";
+
+package cablecar.core.message;
+option java_package = "com.cablecar.backend.core.grpc.message";
+option java_multiple_files = true;
+
+option go_package = "proto/message";
+
+// 消息服务
+service MessageService {
+  // 发送消息
+  rpc SendMessage(SendMessageRequest) returns (SendMessageResponse);
+
+  // 批量发送消息
+  rpc BatchSendMessage(BatchSendMessageRequest) returns (BatchSendMessageResponse);
+
+  // 拉取消息
+  rpc PullMessage(PullMessageRequest) returns (PullMessageResponse);
+}
+
+// 消息类型枚举
+enum MessageType {
+  MESSAGE_TYPE_UNSPECIFIED = 0;
+  TEXT = 1;
+  IMAGE = 2;
+  VOICE = 3;
+  VIDEO = 4;
+  FILE = 5;
+  LOCATION = 6;
+  CARD = 7;
+  SHARE = 8;
+  SYSTEM = 9;
+  NOTICE = 10;
+  CUSTOM = 11;
+}
+
+// 消息状态枚举
+enum MessageStatus {
+  MESSAGE_STATUS_UNSPECIFIED = 0;
+  SENT = 1;
+  DELIVERED = 2;
+  DELETED = 3;
+}
+
+// 发送消息请求
+message SendMessageRequest {
+  optional string client_msg_id = 1;
+  string content = 2;
+  string sender_uuid = 3;
+  optional MessageType content_type = 4;
+  optional string group_chat_uuid = 5;
+  optional string receiver_uuid = 6;
+}
+
+// 发送消息响应
+message SendMessageResponse {
+  string message_uuid = 1;
+  string created_at = 2; // ISO 8601 format
+
+  // 通用响应字段
+  bool success = 1000;
+  int32 code = 1001;
+  string message = 1002;
+}
+
+// 批量发送消息请求
+message BatchSendMessageRequest {
+  string sender_uuid = 1;
+  string group_chat_uuid = 2;
+  string receiver_uuid = 3;
+  repeated MessageBatchSendItem messages = 4;
+}
+
+// 批量发送消息项
+message MessageBatchSendItem {
+  optional string client_msg_id = 1;
+  string content = 2;
+  optional MessageType content_type = 3;
+}
+
+// 批量发送消息响应
+message BatchSendMessageResponse {
+  repeated SendMessageResponse messages = 1;
+
+  // 通用响应字段
+  bool success = 1000;
+  int32 code = 1001;
+  string message = 1002;
+}
+
+// 拉取消息请求
+message PullMessageRequest {
+  string group_chat_uuid = 1;
+  optional string last_message_uuid = 2;
+  uint32 count = 3; // 1-2000
+}
+
+// 拉取消息响应
+message PullMessageResponse {
+  repeated MessageItem messages = 1;
+
+  // 通用响应字段
+  bool success = 1000;
+  int32 code = 1001;
+  string message = 1002;
+}
+
+// 消息项
+message MessageItem {
+  string message_uuid = 1;
+  optional string client_msg_id = 2;
+  string content = 3;
+  MessageType content_type = 4;
+  string sender_uuid = 5;
+  optional string group_chat_uuid = 6;
+  optional string receiver_uuid = 7;
+  MessageStatus status = 8;
+  string created_at = 9; // ISO 8601 format
+}

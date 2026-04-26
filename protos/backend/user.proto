@@ -1,0 +1,90 @@
+syntax = "proto3";
+
+package cablecar.core.user;
+option java_package = "com.cablecar.backend.core.grpc.user";
+option java_multiple_files = true;
+
+option go_package = "proto/user";
+
+// 用户服务
+service UserService {
+  // 更新用户信息
+  rpc UpdateUser(UpdateUserRequest) returns (UserResponse);
+  // 查询用户信息
+  rpc QueryUser(QueryUserRequest) returns (UserResponse);
+}
+
+// 用户查询类型枚举
+enum UserQueryType {
+  USER_QUERY_TYPE_UNSPECIFIED = 0;
+  PHONE = 1;
+  USER_NO = 2;
+  USER_UUID = 3;
+}
+
+// 性别枚举
+enum GenderType {
+  GENDER_TYPE_UNSPECIFIED = 0;
+  MALE = 1;
+  FEMALE = 2;
+}
+
+// 用户状态枚举
+enum UserStatus {
+  USER_STATUS_UNSPECIFIED = 0;
+  PENDING = 1;
+  ACTIVE = 2;
+  INACTIVE = 3;
+  LOCKED = 4;
+  BANNED = 5;
+  DELETED = 6;
+}
+
+// 更新用户信息请求
+message UpdateUserRequest {
+  string user_uuid = 1;
+  optional string nickname = 2;
+  optional string avatar_url = 3;
+  optional GenderType gender = 4;
+  optional string birth_date = 5; // Format: YYYY-MM-DD
+  optional string bio = 6;
+  optional string country_code = 7;
+  optional string country_name = 8;
+  optional string province_code = 9;
+  optional string province_name = 10;
+  optional string city_code = 11;
+  optional string city_name = 12;
+}
+
+// 查询用户请求
+message QueryUserRequest {
+  UserQueryType query_type = 1;
+  optional string user_uuid = 2;
+  optional string phone = 3;
+  optional string user_no = 4;
+}
+
+// 用户信息响应
+message UserResponse {
+  string user_no = 1;
+  string nickname = 2;
+  string phone = 3;
+  string avatar_url = 4;
+  string user_uuid = 5;
+  GenderType gender = 6;
+  string birth_date = 7;
+  string bio = 8;
+  string country_code = 9;
+  string country_name = 10;
+  string province_code = 11;
+  string province_name = 12;
+  string city_code = 13;
+  string city_name = 14;
+  UserStatus status = 15;
+  string last_active_at = 16; // ISO 8601 format
+
+  // 通用响应字段
+  bool success = 1000;
+  int32 code = 1001;
+  string message = 1002;
+}

@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package cablecar.core.openservice;
+option java_package = "com.cablecar.backend.core.grpc.openservice";
+option java_multiple_files = true;
+
+option go_package = "proto/openservice";
+
+service OpenService {
+  rpc resolveToken(ResolveTokenRequest) returns (ResolveTokenResponse);
+}
+
+message ResolveTokenRequest {
+  string token = 1;
+
+}
+
+message ResolveTokenResponse {
+  bool valid = 1;
+  string user_uuid = 2;
+  string user_no = 3;
+  string user_nickname = 4;
+
+  // 通用响应字段
+  bool success = 1000;
+  int32 code = 1001;
+  string message = 1002;
+}
